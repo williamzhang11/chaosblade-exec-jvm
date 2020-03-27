@@ -87,13 +87,14 @@ public class CreateHandler implements RequestHandler {
         if (modelSpec == null) {
             return Response.ofFailure(Response.Code.ILLEGAL_PARAMETER, "the target not supported");
         }
+        //获取实验组件对应的action
         ActionSpec actionSpec = modelSpec.getActionSpec(actionArg);
         if (actionSpec == null) {
             return Response.ofFailure(Code.NOT_FOUND, "the action not supported");
         }
-        // parse request to model
+        // parse request to model(封装实验模型)
         Model model = ModelParser.parseRequest(target, request, actionSpec);
-        // check command arguments
+        // check command arguments（检验参数是否正确）
         PredicateResult predicate = modelSpec.predicate(model);
         if (!predicate.isSuccess()) {
             return Response.ofFailure(Response.Code.ILLEGAL_PARAMETER, predicate.getErr());
@@ -132,10 +133,12 @@ public class CreateHandler implements RequestHandler {
      * @return
      */
     private Response handleInjection(String suid, Model model, ModelSpec modelSpec) {
+        //suid, modelUid
         RegisterResult result = this.statusManager.registerExp(suid, model);
         if (result.isSuccess()) {
             // handle injection
             try {
+                //执行有些需要注入之前的动作
                 applyPreInjectionModelHandler(suid, modelSpec, model);
             } catch (ExperimentException ex) {
                 this.statusManager.removeExp(suid);

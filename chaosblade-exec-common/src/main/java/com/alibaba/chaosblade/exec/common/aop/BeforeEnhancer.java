@@ -40,6 +40,7 @@ public abstract class BeforeEnhancer implements Enhancer {
     @Override
     public void beforeAdvice(String targetName, ClassLoader classLoader, String className, Object object,
                              Method method, Object[] methodArguments) throws Exception {
+        //验证是否注册
         if (!ManagerFactory.getStatusManager().expExists(targetName)) {
             return;
         }

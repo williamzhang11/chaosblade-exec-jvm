@@ -79,7 +79,9 @@ public class SandboxModule implements Module, ModuleLifecycle, PluginLifecycleLi
     @Override
     public void onLoad() throws Throwable {
         LOGGER.info("load chaosblade module");
+        //保存生命周期监听器对象本身到DefaultListenerManager，让ManagerFactory持有引用
         ManagerFactory.getListenerManager().setPluginLifecycleListener(this);
+        //加载定义好的三个处理请求处理器dispatchService，让DefaultDispatchService持有引用,map<handlerName, RequestHandler>
         dispatchService.load();
         ManagerFactory.load();
     }
@@ -109,13 +111,16 @@ public class SandboxModule implements Module, ModuleLifecycle, PluginLifecycleLi
     }
 
     private void loadPlugins() throws Exception {
+        //获取定义的所有插件
         List<Plugin> plugins = PluginLoader.load(Plugin.class, PluginJarUtil.getPluginFiles(getClass()));
         for (Plugin plugin : plugins) {
             try {
                 PluginBean pluginBean = new PluginBean(plugin);
                 final ModelSpec modelSpec = pluginBean.getModelSpec();
                 // register model
+                //将实验模型注册到DefaultModelSpecManager，持有引用<targetName, 实验模型>
                 ManagerFactory.getModelSpecManager().registerModelSpec(modelSpec);
+                //将所有插件的拦截点注册到sandbox
                 add(pluginBean);
             } catch (Throwable e) {
                 LOGGER.warn("Load " + plugin.getClass().getName() + " occurs exception", e);
@@ -201,12 +206,15 @@ public class SandboxModule implements Module, ModuleLifecycle, PluginLifecycleLi
             return;
         }
         String enhancerName = plugin.getEnhancer().getClass().getSimpleName();
+        //根据插件信息创建类和方法过滤器
         Filter filter = SandboxEnhancerFactory.createFilter(enhancerName, pointCut);
         // add after event listener. For the after event, the reason for adding the before event is to cache the
         // necessary parameters.
         if (plugin.isAfterEvent()) {
+            //将要filter和对应的event一起注册到sandbox
             int watcherId = moduleEventWatcher.watch(filter, SandboxEnhancerFactory.createAfterEventListener(plugin),
                 Type.BEFORE, Type.RETURN);
+            //记录sandbox需要监控的watchId
             watchIds.put(PluginUtil.getIdentifierForAfterEvent(plugin), watcherId);
         } else {
             int watcherId = moduleEventWatcher.watch(

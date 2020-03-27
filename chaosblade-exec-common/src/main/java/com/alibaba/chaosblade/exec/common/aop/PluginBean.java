@@ -23,10 +23,13 @@ import com.alibaba.chaosblade.exec.common.plugin.MethodPlugin;
  * @author Changjun Xiao
  */
 public class PluginBean implements Plugin {
-
+    //插件名字
     private String name;
+    //实验模型
     private ModelSpec modelSpec;
+    //切点：定义了类和方法的匹配器
     private PointCut pointCut;
+    //执行的增强器
     private Enhancer enhancer;
     private boolean isAfterEvent;
 

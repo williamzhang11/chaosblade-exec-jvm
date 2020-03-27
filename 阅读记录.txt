@@ -1,0 +1,44 @@
+1.保存生命周期监听器对象本身到DefaultListenerManager，让ManagerFactory持有引用
+ManagerFactory 中DefaultListenerManager :  Plugin listener
+
+    SandboxModule
+
+2.加载定义好的三个处理请求处理器dispatchService，让DefaultDispatchService持有引用,map<handlerName, RequestHandler>，并初始化了其中的管理器引用
+DefaultDispatchService 中：ConcurrentHashMap<String, RequestHandler> handles = new ConcurrentHashMap();
+
+
+DefaultStatusManager 中 closed = false
+
+
+//<实验组件（Target）：实验模型>
+DefaultModelSpecManager 中： private Map<String, ModelSpec> modelSpecs = new HashMap<String, ModelSpec>();
+
+onLoad加载状态：
+1.DefaultListenerManager 持有引用 pluginLifecycleListener
+2.DefaultDispatchService 持有引用 <handlerName, RequestHandler>,CreateHandler、DestroyHandler、StatusHandler，并初始化了各自的manager引用
+
+CreateHandler:   
+			modelSpecManager
+			statusManager
+
+DestroyHandler:
+			modelSpecManager
+			statusManager
+
+StatusHandler:
+			statusManager
+
+onActive激活状态：
+
+
+2.实验模型注册：DefaultModelSpecManager 持有引用<targetName, 实验模型> ，支持的实验类型
+
+将所有插件注册到sandbox,并缓存监控的id   <插件信息拼接, watchIds>
+
+
+create:
+
+DefaultDispatchService中
+
+handler中
+

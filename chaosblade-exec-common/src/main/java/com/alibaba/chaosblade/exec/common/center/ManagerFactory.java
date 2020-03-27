@@ -33,7 +33,7 @@ public class ManagerFactory {
      * Listener manager manages the plugin listener
      */
     private static ListenerManager listenerManager = new DefaultListenerManager();
-
+//1
     public static StatusManager getStatusManager() {
         return statusManager;
     }

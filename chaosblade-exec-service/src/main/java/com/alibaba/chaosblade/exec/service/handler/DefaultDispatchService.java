@@ -66,8 +66,11 @@ public class DefaultDispatchService implements DispatchService {
 
     @Override
     public void load() {
+        //加载create请求处理器，并初始化了其中的默认管理器引用，包括实验模型管理器，状态管理器
         registerHandler(new CreateHandler());
+        //加载destroy请求处理器，并初始化了其中的默认管理器引用，包括实验模型管理器，状态管理器
         registerHandler(new DestroyHandler());
+        //加载status请求处理器，并初始化了其中的默认管理器引用，包括状态管理器
         registerHandler(new StatusHandler());
     }
 
