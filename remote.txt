@@ -1,0 +1,54 @@
+# 远程调试
+
+## 第一步：编译生成jar包
+
+如果是windows 自行安装make命令,然后执行：make build_java
+参考https://blog.csdn.net/C2681595858/article/details/85554359
+
+或者自行执行命令打包，可参考start.sh
+
+打包好后可得到，chaosblade-java-agent-0.5.0.jar，路径在target下
+
+## 第二步：安装chaosblade
+提前下载chaosblade-0.5.0-linux-amd64.tar.gz 解压
+将chaosblade-java-agent-0.5.0.jar放到chaosblade-0.5.0/lib/sandbox/module下
+
+
+第三步：利用tomcat远程调试
+
+修改bin/catalina.sh文件，在最开始添加如下代码：
+
+JPDA_OPTS="-Xrunjdwp:transport=dt_socket,address=8000,server=y,suspend=n"
+然后通过以下命令启动tomcat
+
+./catalina.sh jpda start
+
+centos7开放8000端口
+
+第四步：idea中配置远程调试
+
++ remote
+配置的端口是上面远程的ip和端口
+
+随后进行启动就行了
+
+第五步：挂载java agent
+
+./blade p jvm -p tomcat
+
+
+
+解决主机无法telnet虚拟机内某个端口问题
+
+1.查看防火墙下可以访问的端口
+firewall-cmd --list-port
+2.增加一个持久访问端口：
+firewall-cmd --zone=public  --permanent --add-port=22122/tcp
+3.重启防火墙
+
+firewall-cmd --reload
+
+
+
+
+参考：https://blog.csdn.net/u011781521/article/details/91442896
